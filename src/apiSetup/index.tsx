@@ -96,9 +96,7 @@ export const deleteUsersInfo = async (userId) => {
 
 export const getAllSchoolsInfo = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:11007" + "/get-all-schools"
-    );
+    const response = await axios.get(`${OPEN_API_URL}/get-all-schools`);
     // console.log("getAllSchoolsInfo", response);
     if (response.data.status === 200) {
       // console.log("getAllSchoolsInfo222222", response);
@@ -741,6 +739,52 @@ export const deleteMicrocredentials = async (id) => {
     );
 
     console.log("micro Response", response);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Fetch error", error);
+    throw error;
+  }
+};
+
+export const AddMicrocredentialsData = async (values) => {
+  try {
+    // console.log("FORM values:", values);
+    const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("user");
+
+    if (!token) {
+      throw new Error("Token not found");
+    }
+
+    if (!userString) {
+      throw new Error("User data not found");
+    }
+
+    // Parse the user string to an object
+    const user = JSON.parse(userString);
+
+    // Check if the candidateId exists in the user object
+    if (!user.candidateId) {
+      throw new Error("Candidate ID not found in user data");
+    }
+
+    const response = await axios.post(
+      `${API_URL}add-microcredential/${user.candidateId}`,
+      values,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("micro response", response);
 
     if (response.status === 200) {
       return response.data;

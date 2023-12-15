@@ -7,13 +7,19 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
 import { deleteMicrocredentials, getAllMicrocredentials } from "apiSetup"; // Replace with your API function for fetching microcredentials
-import { H1 } from "components/Typography";
+import { H1, H3, H4 } from "components/Typography";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/router";
 
 const Index = () => {
+  const router = useRouter();
   const [microcredentials, setMicrocredentials] = useState([]);
   const [loading, setLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
@@ -83,7 +89,7 @@ const Index = () => {
       headerName: "Actions",
       width: 200,
       renderCell: (params) => (
-        <div style={{ gap: 2 }}>
+        <div style={{ gap: 4 }}>
           <Button
             variant="contained"
             color="secondary"
@@ -96,6 +102,7 @@ const Index = () => {
           <Button
             variant="contained"
             color="primary"
+            sx={{ ml: 2 }}
             onClick={() => {
               handleView(params.row);
             }}
@@ -109,10 +116,30 @@ const Index = () => {
 
   return (
     <VendorDashboardLayout>
-      <Box mt={3} mb={4}>
-        <H1>Microcredentials</H1>
+      <Box
+        mt={5}
+        mb={4}
+        display={"flex"}
+        flexDirection={{ xs: "column", md: "row" }}
+        justifyContent={"space-between"}
+      >
+        <H3>Microcredentials</H3>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{
+            mt: { xs: 3, md: 0 }, // Adjust margin-top for different screen sizes
+            width: { xs: "100%", md: "auto" }, // Set width to 100% on small screens, auto on larger screens
+            alignSelf: { xs: "center", md: "flex-end" }, // Center on small screens, align to flex-end on larger screens
+          }}
+          onClick={() => router.push("/microcredentials/add-microcredentials")}
+        >
+          Add Microcredentials
+        </Button>
       </Box>
-      <Box bgcolor={"white"} style={{ height: 600, width: "100%" }} mt={4}>
+
+      <Box bgcolor={"white"} style={{ height: 500, width: "100%" }} mt={4}>
         <DataGrid
           rows={microcredentials}
           columns={columns}
@@ -148,6 +175,34 @@ const Index = () => {
                 <strong>Total Learners:</strong>{" "}
                 {selectedMicrocredential.totalNumberOfLearners}
               </p>
+              <p>
+                <strong>Level:</strong> {selectedMicrocredential.level}
+              </p>
+              <>
+                <Box>
+                  <Typography variant="h6">What Will I Learn:</Typography>
+                  <ul
+                    style={{
+                      marginLeft: 15,
+                      listStyleType: "disc",
+                      color: "black",
+                    }}
+                  >
+                    {selectedMicrocredential.whatWillILearn.map(
+                      (item, index) => (
+                        <li key={index}>
+                          <Typography>{item}</Typography>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </Box>
+                <Box>
+                  <img
+                    src={`https://dev-futurecapacity-api.flynautstaging.com/uploads/${selectedMicrocredential.courseImage[0]}`}
+                  />
+                </Box>
+              </>
               {/* Add more microcredential details here */}
             </div>
           )}

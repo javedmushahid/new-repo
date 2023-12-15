@@ -6,10 +6,10 @@ import { getAllSchoolsInfo } from "apiSetup";
 import { H1 } from "components/Typography";
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 90 },
-  { field: "name", headerName: "School Name", width: 150 },
-  { field: "email", headerName: "Email", width: 150 },
-  { field: "district", headerName: "District", width: 150 },
+  { field: "_id", headerName: "ID", width: 250 },
+  { field: "name", headerName: "School Name", width: 250 },
+  { field: "email", headerName: "Email", width: 350 },
+  { field: "district", headerName: "District", width: 250 },
   // ... other columns as needed
 ];
 

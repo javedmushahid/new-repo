@@ -84,6 +84,7 @@ const RichTextEditor = ({ name }) => {
           <Button
             variant="contained"
             color="error"
+            sx={{ ml: 2 }}
             onClick={() => handleDelete(params.row._id)}
           >
             Delete
