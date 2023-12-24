@@ -1,15 +1,28 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { H1 } from "components/Typography";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
 import { Delete } from "@mui/icons-material";
 import { AddMicrocredentialsData } from "apiSetup";
 import { useRouter } from "next/router";
+import { useSnackbar } from "notistack";
 
 const AddMicrocredentials = () => {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
   const formik = useFormik({
     initialValues: {
       courseName: "",
@@ -60,6 +73,8 @@ const AddMicrocredentials = () => {
         console.log("API Response:", response);
 
         formik.resetForm();
+        enqueueSnackbar("Added successfully", { variant: "success" });
+
         router.push("/microcredentials");
       } catch (error) {
         console.error("API Error:", error);
@@ -120,17 +135,24 @@ const AddMicrocredentials = () => {
           />
 
           {/* Level */}
-          <TextField
-            fullWidth
-            id="level"
-            name="level"
-            label="Level"
-            value={formik.values.level}
-            onChange={formik.handleChange}
-            error={formik.touched.level && Boolean(formik.errors.level)}
-            helperText={formik.touched.level && formik.errors.level}
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="level-label">Level</InputLabel>
+            <Select
+              labelId="level-label"
+              id="level"
+              name="level"
+              value={formik.values.level}
+              onChange={formik.handleChange}
+              error={formik.touched.level && Boolean(formik.errors.level)}
+              label="Level"
+            >
+              {["Beginner", "Intermediate", "Advanced"].map((level) => (
+                <MenuItem key={level} value={level}>
+                  {level}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* Description */}
           <TextField
@@ -150,19 +172,33 @@ const AddMicrocredentials = () => {
           />
 
           {/* Superpower */}
-          <TextField
-            fullWidth
-            id="superpower"
-            name="superpower"
-            label="Superpower"
-            value={formik.values.superpower}
-            onChange={formik.handleChange}
-            error={
-              formik.touched.superpower && Boolean(formik.errors.superpower)
-            }
-            helperText={formik.touched.superpower && formik.errors.superpower}
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="superpower-label">Superpower</InputLabel>
+            <Select
+              labelId="superpower-label"
+              id="superpower"
+              name="superpower"
+              value={formik.values.superpower}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.superpower && Boolean(formik.errors.superpower)
+              }
+              label="Superpower"
+            >
+              {[
+                "Stylish Thinker",
+                "Community Builder",
+                "Engager",
+                "Influencer",
+                "Adapter",
+                "Relationship Builder",
+              ].map((superpower) => (
+                <MenuItem key={superpower} value={superpower}>
+                  {superpower}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Box mb={2}>
             <Typography variant="subtitle1" mb={1}>
               What Will I Learn
@@ -227,14 +263,18 @@ const AddMicrocredentials = () => {
           )}
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ mb: 3 }}
-          >
-            Add Microcredentials
-          </Button>
+
+          <Box mt={3} mb={5}>
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mb: 3 }}
+            >
+              Add Microcredentials
+            </Button>
+          </Box>
         </form>
       </Box>
     </VendorDashboardLayout>

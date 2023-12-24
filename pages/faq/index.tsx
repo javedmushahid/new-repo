@@ -14,6 +14,7 @@ import {
   TableRow,
   Paper,
   Typography,
+  Box,
 } from "@mui/material";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
 import { addFaq, deleteFaq, getAllFaq, getFaq, updateFaq } from "apiSetup";
@@ -44,6 +45,9 @@ const FAQManagement = () => {
     title: "",
     content: "",
   }); // Use the FAQ interface
+  const [currentPage, setCurrentPage] = useState(1);
+  const [faqsPerPage] = useState(10);
+
   const handleViewDialogOpen = (faq) => {
     setViewedFaq(faq);
     setViewDialogOpen(true);
@@ -162,7 +166,14 @@ const FAQManagement = () => {
   useEffect(() => {
     fetchFaqs();
   }, []);
-  console.log(faqs);
+  // console.log(faqs);
+  const indexOfLastFaq = currentPage * faqsPerPage;
+  const indexOfFirstFaq = indexOfLastFaq - faqsPerPage;
+  const currentFaqs = faqs.slice(indexOfFirstFaq, indexOfLastFaq);
+  const totalFaqs = faqs.length;
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <VendorDashboardLayout>
       <h1>FAQ Management</h1>
@@ -185,7 +196,7 @@ const FAQManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {faqs.map((faq, index) => (
+            {currentFaqs.map((faq, index) => (
               <TableRow key={index}>
                 <TableCell>{faq.title}</TableCell>
                 <TableCell>{faq.content}</TableCell>
@@ -220,7 +231,35 @@ const FAQManagement = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
+      <Box
+        mt={3}
+        mb={3}
+        display={"flex"}
+        justifyContent={"flex-end"}
+        alignItems={"center"}
+        gap={2}
+      >
+        <Typography>
+          Showing ({indexOfFirstFaq + 1}-{Math.min(indexOfLastFaq, totalFaqs)}{" "}
+          of {totalFaqs})
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => paginate(currentPage + 1)}
+          disabled={indexOfLastFaq >= faqs.length}
+        >
+          Next
+        </Button>
+      </Box>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add New FAQ</DialogTitle>
         <DialogContent>
@@ -228,7 +267,7 @@ const FAQManagement = () => {
             label="Title"
             fullWidth
             value={newFaq.title}
-            sx={{ gap: 2, mb: 2 }}
+            sx={{ gap: 2, mb: 2, mt: 2 }}
             onChange={(e) => setNewFaq({ ...newFaq, title: e.target.value })}
           />
           <TextField
@@ -242,7 +281,15 @@ const FAQManagement = () => {
           <Button variant="contained" color="primary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleSave}>
+          <Button
+            variant="contained"
+            sx={{
+              color: "white",
+              bgcolor: "green",
+              "&:hover": { bgcolor: "darkgreen" },
+            }}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </DialogActions>

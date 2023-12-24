@@ -5,7 +5,7 @@ import { Box, Button, Card, TextField } from "@mui/material";
 import { H1, H6, Small } from "components/Typography";
 import { FlexBox, FlexRowCenter } from "components/flex-box";
 
-const ResetPassword: NextPage = () => {
+const index = () => {
   return (
     <FlexRowCenter flexDirection="column" minHeight="100vh">
       <SEO title="Reset Password" />
@@ -55,4 +55,4 @@ const ResetPassword: NextPage = () => {
   );
 };
 
-export default ResetPassword;
+export default index;

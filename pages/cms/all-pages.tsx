@@ -13,6 +13,10 @@ import {
   TextField,
   Typography,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { H1 } from "components/Typography";
 import { useSnackbar } from "notistack";
@@ -23,6 +27,10 @@ import { deletePage, getAllPage } from "apiSetup";
 const RichTextEditor = ({ name }) => {
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewedPage, setViewedPage] = useState(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [pageToDelete, setPageToDelete] = useState(null);
 
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
@@ -34,8 +42,11 @@ const RichTextEditor = ({ name }) => {
       const data = await getAllPage();
       console.log(data);
       setLoading(false);
-
-      setPages(data.data); // Assuming the API returns the array of pages
+      const updatedRows = data.data.map((row, index) => ({
+        ...row,
+        id: index + 1,
+      }));
+      setPages(updatedRows); // Assuming the API returns the array of pages
     } catch (error) {
       console.error("Error fetching pages:", error);
     }
@@ -43,18 +54,39 @@ const RichTextEditor = ({ name }) => {
   useEffect(() => {
     fetchPages();
   }, []);
-  console.log(pages, "data pages");
+
+  const handleDeleteConfirmationOpen = (id) => {
+    setPageToDelete(id);
+    setDeleteConfirmationOpen(true);
+  };
+
+  const handleDeleteConfirmationClose = () => {
+    setPageToDelete(null);
+    setDeleteConfirmationOpen(false);
+  };
+
   const handleEdit = (id) => {
     // Handle edit action here, e.g., redirect to an edit page
     router.push(`/edit-page/${id}`);
+  };
+  const handleViewDialogOpen = (page) => {
+    setViewedPage(page);
+    setViewDialogOpen(true);
+  };
+
+  const handleViewDialogClose = () => {
+    setViewedPage(null);
+    setViewDialogOpen(false);
   };
 
   const handleDelete = async (id) => {
     try {
       // Call the deletePage function to delete the page by its ID
-      await deletePage(id);
+      await deletePage(pageToDelete);
       // If deletion is successful, remove the deleted page from the state
-      setPages((prevPages) => prevPages.filter((page) => page._id !== id));
+      setPages((prevPages) =>
+        prevPages.filter((page) => page._id !== pageToDelete)
+      );
       enqueueSnackbar("Page deleted successfully", { variant: "success" });
     } catch (error) {
       console.error("Error deleting page:", error);
@@ -66,7 +98,14 @@ const RichTextEditor = ({ name }) => {
     { field: "id", headerName: "ID", width: 150 },
     { field: "title", headerName: "Title", width: 150 },
     { field: "description", headerName: "Description", width: 300 },
-    { field: "content", headerName: "Content", width: 300 },
+    {
+      field: "content",
+      headerName: "Content",
+      width: 300,
+      renderCell: (params) => (
+        <div dangerouslySetInnerHTML={{ __html: params.value }} />
+      ),
+    },
     { field: "status", headerName: "Status", width: 300 },
     {
       field: "action",
@@ -77,7 +116,15 @@ const RichTextEditor = ({ name }) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handleEdit(params.row._id)}
+            onClick={() => handleViewDialogOpen(params.row)}
+          >
+            View
+          </Button>
+          <Button
+            sx={{ ml: 2 }}
+            variant="contained"
+            color="primary"
+            onClick={() => router.push(`/cms/${params.row._id}`)}
           >
             Edit
           </Button>
@@ -85,7 +132,7 @@ const RichTextEditor = ({ name }) => {
             variant="contained"
             color="error"
             sx={{ ml: 2 }}
-            onClick={() => handleDelete(params.row._id)}
+            onClick={() => handleDeleteConfirmationOpen(params.row._id)}
           >
             Delete
           </Button>
@@ -116,6 +163,53 @@ const RichTextEditor = ({ name }) => {
           />
         </div>
       </Box>
+      <Dialog open={viewDialogOpen} onClose={handleViewDialogClose}>
+        <DialogTitle>View Page</DialogTitle>
+        <DialogContent sx={{ width: 500 }}>
+          {viewedPage && (
+            <div>
+              <Typography>Title: {viewedPage.title}</Typography>
+              <Typography>Description: {viewedPage.description}</Typography>
+              <Typography>
+                Content:
+                <div dangerouslySetInnerHTML={{ __html: viewedPage.content }} />
+              </Typography>{" "}
+              <Typography>Status: {viewedPage.status}</Typography>
+              {/* Add more details as needed */}
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleViewDialogClose}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={deleteConfirmationOpen}
+        onClose={handleDeleteConfirmationClose}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this page?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleDeleteConfirmationClose}
+          >
+            Cancel
+          </Button>
+          <Button variant="contained" color="error" onClick={handleDelete}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </VendorDashboardLayout>
   );
 };

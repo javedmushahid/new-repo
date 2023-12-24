@@ -25,6 +25,9 @@ const Index = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [selectedMicrocredential, setSelectedMicrocredential] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
+  const [microcredentialToDelete, setMicrocredentialToDelete] = useState(null);
+
   const getMicrocredentials = async () => {
     try {
       const response = await getAllMicrocredentials();
@@ -49,20 +52,30 @@ const Index = () => {
     setSelectedMicrocredential(null);
     setOpenDialog(false);
   };
-  useEffect(() => {
-    // Fetch microcredentials from the API when the component mounts
-    getMicrocredentials();
-  }, []);
+
+  const handleOpenDeleteConfirmation = (microcredential) => {
+    setMicrocredentialToDelete(microcredential);
+    setOpenDeleteConfirmation(true);
+  };
+
+  const handleCloseDeleteConfirmation = () => {
+    setMicrocredentialToDelete(null);
+    setOpenDeleteConfirmation(false);
+  };
+
   // Define the columns for the Data Grid
   const handleDelete = async (id) => {
     try {
-      const response = await deleteMicrocredentials(id);
+      const response = await deleteMicrocredentials(
+        microcredentialToDelete._id
+      );
       if (response) {
         // Remove the deleted microcredential from the state
         setMicrocredentials((prevMicrocredentials) =>
-          prevMicrocredentials.filter((mc) => mc._id !== id)
+          prevMicrocredentials.filter((mc) => mc._id !== microcredentialToDelete._id)
         );
         enqueueSnackbar("Deleted", { variant: "success" });
+        handleCloseDeleteConfirmation();
       } else {
         console.error("Error deleting microcredential:", response);
       }
@@ -70,7 +83,10 @@ const Index = () => {
       console.error("Error deleting microcredential:", error);
     }
   };
-
+  useEffect(() => {
+    // Fetch microcredentials from the API when the component mounts
+    getMicrocredentials();
+  }, []);
   // Define the columns for the Data Grid
   const columns = [
     { field: "_id", headerName: "ID", width: 200 },
@@ -93,9 +109,7 @@ const Index = () => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => {
-              handleDelete(params.row._id);
-            }}
+            onClick={() => handleOpenDeleteConfirmation(params.row)}
           >
             Delete
           </Button>
@@ -113,7 +127,6 @@ const Index = () => {
       ),
     },
   ];
-
   return (
     <VendorDashboardLayout>
       <Box
@@ -197,11 +210,13 @@ const Index = () => {
                     )}
                   </ul>
                 </Box>
-                <Box>
-                  <img
-                    src={`https://dev-futurecapacity-api.flynautstaging.com/uploads/${selectedMicrocredential.courseImage[0]}`}
-                  />
-                </Box>
+                {selectedMicrocredential.courseImage.length > 0 && (
+                  <Box>
+                    <img
+                      src={`https://dev-futurecapacity-api.flynautstaging.com/uploads/${selectedMicrocredential.courseImage[0]}`}
+                    />
+                  </Box>
+                )}
               </>
               {/* Add more microcredential details here */}
             </div>
@@ -210,6 +225,25 @@ const Index = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog} color="primary">
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openDeleteConfirmation}
+        onClose={handleCloseDeleteConfirmation}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this microcredential?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteConfirmation} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="secondary">
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

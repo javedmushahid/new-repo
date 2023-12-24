@@ -11,7 +11,6 @@ const RouteGuard = ({ children }) => {
   const authState = useSelector((state: any) => state.auth);
 
   useEffect(() => {
-    // Function to initialize auth from local storage
     const initializeAuth = () => {
       const userFromStorage = localStorage.getItem("user");
       const tokenFromStorage = localStorage.getItem("token");
@@ -19,14 +18,17 @@ const RouteGuard = ({ children }) => {
       if (userFromStorage && tokenFromStorage) {
         dispatch(setUser(JSON.parse(userFromStorage)));
         dispatch(setToken(tokenFromStorage));
-        if (router.pathname === "/login") {
-          // router.push("/");
+        if (
+          router.pathname === "/login" ||
+          router.pathname === "/reset-password"
+        ) {
           router.replace("/");
         }
       } else {
-        // Perform redirect only if the path is not '/login'
-        if (router.pathname !== "/login") {
-          // router.push("/login");
+        if (
+          router.pathname !== "/login" &&
+          router.pathname !== "/reset-password"
+        ) {
           router.replace("/login");
         }
       }
@@ -35,7 +37,11 @@ const RouteGuard = ({ children }) => {
     initializeAuth();
   }, [dispatch, router]);
 
-  if (router.pathname !== "/login" && !authState.token) {
+  if (
+    router.pathname !== "/login" &&
+    router.pathname !== "/reset-password" &&
+    !authState.token
+  ) {
     // If the user is not logged in and not on the login page, show null or a loading spinner
     return null; // or <LoadingSpinner />
   }

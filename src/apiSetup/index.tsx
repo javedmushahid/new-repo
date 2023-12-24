@@ -29,6 +29,56 @@ export const adminLogin = async (email, password) => {
     throw error;
   }
 };
+export const resetPassword = async (email) => {
+  try {
+    const response = await axios.post(API_URL + "forgot-password", {
+      email,
+    });
+    console.log("Response forgot password", response);
+    if (response.data.status === 200) {
+      return response.data;
+    } else if (response.data.status == 200) {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Error", error);
+    throw error;
+  }
+};
+export const validateOTP = async (email, otp) => {
+  try {
+    const response = await axios.post(API_URL + "verify-otp", {
+      email,
+      otp,
+    });
+
+    if (response.data.status === 200) {
+      return response.data;
+    } else if (response.data.status !== 200) {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Error", error);
+    throw error;
+  }
+};
+export const forgotPassword = async (email, password) => {
+  try {
+    const response = await axios.post(API_URL + "reset-password", {
+      email,
+      password,
+    });
+
+    if (response.data.status === 200) {
+      return response.data;
+    } else if (response.data.status !== 200) {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Error", error);
+    throw error;
+  }
+};
 
 export const registerIndividual = async (values) => {
   console.log("values", values);
@@ -121,6 +171,31 @@ export const allUsersPosts = async () => {
     }
 
     const response = await axios.get(`${API_URL}get-all-posts`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the headers
+      },
+    });
+    console.log("Response", response);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Fetch error", error);
+    throw error;
+  }
+};
+export const deletePost = async (id) => {
+  try {
+    const token = localStorage.getItem("token"); // Get the token from localStorage
+    // console.log("token", token);
+
+    if (!token) {
+      throw new Error("Token not found"); // Handle the case where the token is not available
+    }
+
+    const response = await axios.delete(`${API_URL}delete-post/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Include the token in the headers
       },
@@ -456,7 +531,7 @@ export const getPage = async (id) => {
       throw new Error("Candidate ID not found in user data");
     }
 
-    const response = await axios.post(
+    const response = await axios.get(
       `${API_URL}get-page/${user.candidateId}/${id}`,
       {
         headers: {
@@ -785,6 +860,94 @@ export const AddMicrocredentialsData = async (values) => {
     );
 
     console.log("micro response", response);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Fetch error", error);
+    throw error;
+  }
+};
+export const getAdminProfile = async () => {
+  try {
+    // console.log("FORM values:", values);
+    const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("user");
+
+    if (!token) {
+      throw new Error("Token not found");
+    }
+
+    if (!userString) {
+      throw new Error("User data not found");
+    }
+
+    // Parse the user string to an object
+    const user = JSON.parse(userString);
+
+    // Check if the candidateId exists in the user object
+    if (!user.candidateId) {
+      throw new Error("Candidate ID not found in user data");
+    }
+
+    const response = await axios.get(
+      `${API_URL}admin-profile/${user.candidateId}`,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("admin profile response", response);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Not Authorized");
+    }
+  } catch (error) {
+    console.error("Fetch error", error);
+    throw error;
+  }
+};
+export const editAdminProfile = async (value) => {
+  try {
+    // console.log("FORM values:", values);
+    const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("user");
+
+    if (!token) {
+      throw new Error("Token not found");
+    }
+
+    if (!userString) {
+      throw new Error("User data not found");
+    }
+
+    // Parse the user string to an object
+    const user = JSON.parse(userString);
+
+    // Check if the candidateId exists in the user object
+    if (!user.candidateId) {
+      throw new Error("Candidate ID not found in user data");
+    }
+
+    const response = await axios.put(
+      `${API_URL}admin-profile/${user.candidateId}`,
+      value,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("admin profile response", response);
 
     if (response.status === 200) {
       return response.data;

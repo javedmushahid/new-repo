@@ -2,12 +2,23 @@ import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { H1 } from "components/Typography";
 import { getAllSubscriptions, deleteSubscriptions } from "apiSetup";
-import { Box, Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
+import { useSnackbar } from "notistack";
 
 const Index = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteSubscriptionId, setDeleteSubscriptionId] = useState(null);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   const getSubscriptions = async () => {
     try {
@@ -34,13 +45,18 @@ const Index = () => {
     // Handle subscription deletion here
     console.log(id);
     try {
-      const response = await deleteSubscriptions(id);
+      const response = await deleteSubscriptions(deleteSubscriptionId);
       if (response) {
         // Remove the deleted subscription from the state
         setSubscriptions((prevSubscriptions) =>
-          prevSubscriptions.filter((subscription) => subscription._id !== id)
+          prevSubscriptions.filter(
+            (subscription) => subscription._id !== deleteSubscriptionId
+          )
         );
-        window.location.reload();
+        enqueueSnackbar("Deleted successfully", { variant: "success" });
+        setDeleteDialogOpen(false);
+
+        // window.location.reload();
       } else {
         console.error("Error deleting subscription:", response);
       }
@@ -48,7 +64,15 @@ const Index = () => {
       console.error("Error deleting subscription:", error);
     }
   };
+  const handleOpenDeleteDialog = (subscriptionId) => {
+    setDeleteSubscriptionId(subscriptionId);
+    setDeleteDialogOpen(true);
+  };
 
+  const handleCloseDeleteDialog = () => {
+    setDeleteSubscriptionId(null);
+    setDeleteDialogOpen(false);
+  };
   // Define the columns for the Data Grid
   const columns = [
     { field: "_id", headerName: "ID", width: 170 },
@@ -67,8 +91,8 @@ const Index = () => {
             variant="contained"
             color="secondary"
             onClick={() => {
-              // Handle delete action here
-              handleDelete(params.row._id);
+              // Open the delete confirmation dialog
+              handleOpenDeleteDialog(params.row._id);
             }}
           >
             Delete
@@ -96,6 +120,18 @@ const Index = () => {
           getRowId={(row) => row._id}
         />
       </Box>
+      <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this subscription?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <Button onClick={handleDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </VendorDashboardLayout>
   );
 };

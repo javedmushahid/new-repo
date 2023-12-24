@@ -54,10 +54,14 @@ const Login = () => {
   const [error, setError] = useState("");
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const dispatch = useDispatch();
+  const [resetClicked, setResetClicked] = useState(false); // Add state for reset click
+
   const togglePasswordVisibility = useCallback(() => {
     setPasswordVisibility((visible) => !visible);
   }, []);
-
+  const handleResetClick = () => {
+    setResetClicked(true);
+  };
   const handleFormSubmit = async (values: any) => {
     setLoading(true);
     setError("");

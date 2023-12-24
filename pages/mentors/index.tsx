@@ -50,7 +50,7 @@ const AllMentors = () => {
   // Define the columns for the Data Grid
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
-    { field: "candidateId", headerName: "Candidate Id", width: 200 },
+    { field: "candidateId", headerName: "Mentor Id", width: 200 },
     { field: "fullName", headerName: "Full Name", width: 200 },
     { field: "superpower", headerName: "SuperPower", width: 200 },
     {

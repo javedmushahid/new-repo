@@ -32,7 +32,7 @@ const IndexPage: NextPage = (props: DashboardProps) => {
   const user = useSelector((state: any) => state.auth.user);
   const token = useSelector((state: any) => state.auth.token);
 
-  console.log("Cardlist", cardList);
+  // console.log("Cardlist", cardList);
   return (
     <>
       <VendorDashboardLayout>

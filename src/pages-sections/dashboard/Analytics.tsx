@@ -96,7 +96,7 @@ const Analytics: FC = () => {
         >
           <MenuItem value="yearly">Yearly</MenuItem>
           <MenuItem value="monthly">Monthly</MenuItem>
-          <MenuItem value="Weekily">Weekily</MenuItem>
+          <MenuItem value="Weekily">Weekly</MenuItem>
         </StyledSelect>
       </FlexBetween>
 

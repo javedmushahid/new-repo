@@ -15,7 +15,7 @@ const Index = () => {
     try {
       const response = await allUsersInfo();
       if (response.status === 200) {
-        //   console.log("response", response);
+        console.log("response", response);
         const filteredRows = response.data.filter(
           (row) => row.roles === "User"
         );
@@ -37,9 +37,8 @@ const Index = () => {
   };
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
-    { field: "name", headerName: "School Name", width: 150 },
-    { field: "email", headerName: "Email", width: 150 },
-    { field: "district", headerName: "District", width: 150 },
+    { field: "name", headerName: "Full Name", width: 150 },
+    { field: "email", headerName: "Email", width: 250 },
     { field: "candidateId", headerName: "Candidate ID", width: 150 },
     { field: "roles", headerName: "Roles", width: 150 },
     { field: "createdAt", headerName: "Created At", width: 200 },

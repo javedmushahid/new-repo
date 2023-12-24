@@ -6,7 +6,7 @@ import { getAllSchoolsInfo } from "apiSetup";
 import { H1 } from "components/Typography";
 
 const columns = [
-  { field: "_id", headerName: "ID", width: 250 },
+  { field: "id", headerName: "ID", width: 250 },
   { field: "name", headerName: "School Name", width: 250 },
   { field: "email", headerName: "Email", width: 350 },
   { field: "district", headerName: "District", width: 250 },
@@ -23,9 +23,9 @@ const Schools = () => {
       try {
         const response = await getAllSchoolsInfo();
         if (response.status === 200) {
-          const transformedData = response.schools.map((school) => ({
+          const transformedData = response.schools.map((school, index) => ({
             ...school,
-            id: school._id, // Transform _id to id
+            id: index + 1, // Transform _id to id
           }));
           setRows(transformedData);
         } else {

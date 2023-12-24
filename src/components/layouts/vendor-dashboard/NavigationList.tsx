@@ -35,10 +35,9 @@ export const navigations = [
     name: "Mentor Management",
     icon: duotone.Customers,
     children: [
-      { name: "Add Mentor", path: "/mentors/add-mentor" }, // Changed to /admin/mentors/add
       { name: "All Mentors", path: "/mentors" }, // Changed to /admin/mentors
+      { name: "Add Mentor", path: "/mentors/add-mentor" }, // Changed to /admin/mentors/add
     ],
-    // path: "/admin/customers",
   },
   {
     name: "Microcredentials",
@@ -68,6 +67,4 @@ export const navigations = [
     icon: duotone.Notification,
     path: "/notifications",
   },
-
- 
 ];
