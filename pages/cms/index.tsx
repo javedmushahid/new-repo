@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
   Button,
+  IconButton,
 } from "@mui/material";
 import { H1 } from "components/Typography";
 import { ErrorMessage, Field, Form, Formik, useField } from "formik";
@@ -21,6 +22,7 @@ import * as Yup from "yup";
 import { addPage } from "apiSetup";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/router";
+import { ArrowBack } from "@mui/icons-material";
 
 // Since react-quill relies on the window object, we dynamically import it to avoid issues during SSR
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -69,10 +71,18 @@ const RichTextEditor = ({ name }) => {
       console.log(error);
     }
   };
+  const handleGoBack = () => {
+    router.push("/cms/all-pages");
+  };
   return (
     <VendorDashboardLayout>
       <Box mt={4} mb={4}>
-        <H1>Add Pages</H1>
+        <IconButton onClick={handleGoBack}>
+          <ArrowBack />
+        </IconButton>
+        <H1 mt={2} mb={2}>
+          Add Pages
+        </H1>
       </Box>
       <Box>
         <Formik

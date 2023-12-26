@@ -16,6 +16,7 @@ import {
   Button,
   InputLabel,
   Checkbox,
+  IconButton,
 } from "@mui/material";
 import { H1 } from "components/Typography";
 import { ErrorMessage, Field, Form, Formik } from "formik";
@@ -23,6 +24,7 @@ import * as Yup from "yup";
 import { getPage, updatePage } from "apiSetup"; // Import updatePage and getPageBySlug functions
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/router";
+import { ArrowBack } from "@mui/icons-material";
 
 // Since react-quill relies on the window object, we dynamically import it to avoid issues during SSR
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
@@ -108,9 +110,15 @@ const EditPage = () => {
   const handleContentChange = (value) => {
     setEditorHtml(value);
   };
+  const handleGoBack = () => {
+    router.push("/cms/all-pages");
+  };
   return (
     <VendorDashboardLayout>
       <Box mt={4} mb={4}>
+        <IconButton onClick={handleGoBack}>
+          <ArrowBack />
+        </IconButton>
         <H1>Edit Page</H1>
       </Box>
       {/* <Box>

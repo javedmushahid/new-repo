@@ -1,5 +1,7 @@
 // EditMentor.js
 
+import { ArrowBack } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 import { getAllMentorbyId } from "apiSetup";
 import { H1 } from "components/Typography";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
@@ -30,9 +32,14 @@ const EditMentor = () => {
       console.log(error);
     }
   };
-
+  const handleGoBack = () => {
+    router.push("/mentors");
+  };
   return (
     <VendorDashboardLayout>
+      <IconButton onClick={handleGoBack} sx={{ marginBottom: 2 }}>
+        <ArrowBack />
+      </IconButton>
       <H1>Edit Mentor Details</H1>
       <EditMentorForm mentorDetails={mentorDetails} />
     </VendorDashboardLayout>

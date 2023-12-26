@@ -1,4 +1,12 @@
-import { Box, IconButton } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { allUsersInfo, deleteUsersInfo } from "apiSetup";
 import { H1 } from "components/Typography";
@@ -9,6 +17,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const Index = () => {
   const [isLoading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
+  const [deleteUserId, setDeleteUserId] = useState(null);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -35,6 +45,7 @@ const Index = () => {
     }
     setLoading(false);
   };
+
   const columns = [
     { field: "id", headerName: "ID", width: 100 },
     { field: "name", headerName: "Full Name", width: 150 },
@@ -54,26 +65,38 @@ const Index = () => {
         <IconButton
           color="primary"
           aria-label="Delete"
-          onClick={() => handleDelete(params.row.candidateId)}
+          onClick={() => handleOpenDeleteDialog(params.row.candidateId)}
         >
           <DeleteIcon />
         </IconButton>
       ),
     },
   ];
+
+  const handleOpenDeleteDialog = (userId) => {
+    setDeleteUserId(userId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteUserId(null);
+    setDeleteDialogOpen(false);
+  };
   const handleDelete = async (userId) => {
     console.log(userId, "userid");
     try {
-      const response = await deleteUsersInfo(userId);
+      const response = await deleteUsersInfo(deleteUserId);
       if (response.status === 200) {
         setRows((prevRows) =>
-          prevRows.filter((row) => row.candidateId !== userId)
+          prevRows.filter((row) => row.candidateId !== deleteUserId)
         );
       } else {
         // Handle deletion failure
       }
     } catch (error) {
       console.error("Error deleting user:", error);
+    } finally {
+      handleCloseDeleteDialog();
     }
   };
   useEffect(() => {
@@ -102,6 +125,18 @@ const Index = () => {
           />
         </Box>
       </Box>
+      <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this user?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <Button onClick={handleDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </VendorDashboardLayout>
   );
 };

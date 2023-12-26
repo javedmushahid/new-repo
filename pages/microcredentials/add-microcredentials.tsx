@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { H1 } from "components/Typography";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
-import { Delete } from "@mui/icons-material";
+import { ArrowBack, Delete } from "@mui/icons-material";
 import { AddMicrocredentialsData } from "apiSetup";
 import { useRouter } from "next/router";
 import { useSnackbar } from "notistack";
@@ -81,11 +81,17 @@ const AddMicrocredentials = () => {
       }
     },
   });
+  const handleGoBack = () => {
+    router.push("/microcredentials");
+  };
 
   return (
     <VendorDashboardLayout>
-      <Box>
-        <H1 p={5}>Add Microcredentials</H1>
+      <Box mt={2}>
+        <IconButton onClick={handleGoBack}>
+          <ArrowBack />
+        </IconButton>
+        <H1 p={3}>Add Microcredentials</H1>
         <form onSubmit={formik.handleSubmit}>
           {/* Course Name */}
           <TextField

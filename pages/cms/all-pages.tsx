@@ -95,22 +95,22 @@ const RichTextEditor = ({ name }) => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 150 },
-    { field: "title", headerName: "Title", width: 150 },
-    { field: "description", headerName: "Description", width: 300 },
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "title", headerName: "Title", width: 200 },
+    { field: "description", headerName: "Description", width: 200 },
     {
       field: "content",
       headerName: "Content",
-      width: 300,
+      width: 250,
       renderCell: (params) => (
         <div dangerouslySetInnerHTML={{ __html: params.value }} />
       ),
     },
-    { field: "status", headerName: "Status", width: 300 },
+    { field: "status", headerName: "Status", width: 160 },
     {
       field: "action",
       headerName: "Actions",
-      width: 300,
+      width: 250,
       renderCell: (params) => (
         <div>
           <Button
@@ -145,7 +145,9 @@ const RichTextEditor = ({ name }) => {
   return (
     <VendorDashboardLayout>
       <Box>
-        <H1>All Pages</H1>
+        <H1 mt={2} mb={2}>
+          All Pages
+        </H1>
         <div style={{ height: 400, width: "100%" }}>
           <DataGrid
             rows={pages}
